@@ -57,6 +57,7 @@ public interface only.
 ### 7. Why UUID4 Is Used for Session IDs
 
 `TransferSession` generates its `session_id` using `str(uuid.uuid4())`. UUID4 produces a 128-bit random identifier with a collision probability so low it is treated as zero in practice. We use UUID4 rather than a sequential counter (`session_count += 1`) because sequential IDs reveal how many sessions have run and are predictable. UUID4 IDs are opaque and unpredictable in a real distributed system, session IDs can be used for authentication, so predictability is a security risk. This also demonstrates correct use of Python's standard library `uuid` module as referenced in the project's Week 1-5 00P concepts.
+
 ### 9. How @total_ordering Reduces Code Duplication
 
 Python requires six comparison methods for a fully ordered type:
@@ -68,4 +69,9 @@ The `@functools.total_ordering` decorator reduces this duplication. We only defi
 
 This follows the DRY (Don't Repeat Yourself) principle and still provides full support for operations such as `sorted()`, `min()`, and `max()`.
 
+---
+
+### 10. Why the Swarm Class Exists Instead of a Plain List
+
+A naive implementation of the tracker could store peers as a plain dictionary mapping file hashes to lists of peers. Instead, a dedicated `Swarm` class was created. This matters for two reasons. First, `Swarm` uses a Python `set` internally, which prevents duplicate peer registrations without any extra guard code - if the same peer registers twice, the set silently ignores the second insertion. Second, `Swarm` implements `__len__`, `__contains__`, and `__iter__`, making it behave like a built-in container: you can write `if peer in swarm:` or `for p in swarm:` naturally. This is operator overloading (Week 4): giving a custom class the same interface as Python's built-in types so it integrates cleanly everywhere.
 
