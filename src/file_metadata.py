@@ -33,7 +33,7 @@ class FileMetadata:
             raise TypeError('data must be bytes or bytearray')
 
         self._filename = filename
-        self._size_bytes = len(data)
+        self._size_bytes = len(data) # store size from original data; len(data) is O(1) for bytes objects
         self._sha256_hash = hashlib.sha256(data).hexdigest()
         # SHA-256 of full file content is the unique identity; two files with same hash are equal at the end.
         self._chunk_size_bytes = chunk_size_bytes
